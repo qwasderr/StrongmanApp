@@ -9,28 +9,22 @@ using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
 {
-    public class UsersController : Controller
+    public class AspNetUsersController : Controller
     {
         private readonly SportDbContext _context;
 
-        public UsersController(SportDbContext context)
+        public AspNetUsersController(SportDbContext context)
         {
             _context = context;
         }
 
-        // GET: Users
+        // GET: AspNetUsers
         public async Task<IActionResult> Index()
         {
-            List<string> list1 = new List<string>();
-            foreach (var user in _context.AspNetUsers)
-            {
-                list1.Add(user.Id);
-            }
-            var sportDbContext = _context.Users.Where(a=>list1.Contains(a.Id));
-            return View(await sportDbContext.ToListAsync());
+            return View(await _context.AspNetUsers.ToListAsync());
         }
 
-        // GET: Users/Details/5
+        // GET: AspNetUsers/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -38,42 +32,42 @@ namespace StrongmanApp.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .Include(u => u.Country)
+            var aspNetUser = await _context.AspNetUsers
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (aspNetUser == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(aspNetUser);
         }
 
-        // GET: Users/Create
+        // GET: AspNetUsers/Create
         public IActionResult Create()
         {
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id");
             return View();
         }
 
-        // POST: Users/Create
+        // POST: AspNetUsers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,BirthDate,Email,IsContestant,Age,Weight,Height,FirstCompYear,LastCompYear,CountryId,PhotoUrl,IsAdmin,Sex,SportCategory,LastUpdate,IsDeleted")] User user)
+        public async Task<IActionResult> Create([Bind("Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] AspNetUser aspNetUser)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
+                _context.Add(aspNetUser);
+                User us = new User();
+                us.Id=aspNetUser.Id;
+                _context.Add(us);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryId);
-            return View(user);
+            return View(aspNetUser);
         }
 
-        // GET: Users/Edit/5
+        // GET: AspNetUsers/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -81,23 +75,22 @@ namespace StrongmanApp.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var aspNetUser = await _context.AspNetUsers.FindAsync(id);
+            if (aspNetUser == null)
             {
                 return NotFound();
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryId);
-            return View(user);
+            return View(aspNetUser);
         }
 
-        // POST: Users/Edit/5
+        // POST: AspNetUsers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,BirthDate,Email,IsContestant,Age,Weight,Height,FirstCompYear,LastCompYear,CountryId,PhotoUrl,IsAdmin,Sex,SportCategory,LastUpdate,IsDeleted")] User user)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] AspNetUser aspNetUser)
         {
-            if (id != user.Id)
+            if (id != aspNetUser.Id)
             {
                 return NotFound();
             }
@@ -106,12 +99,12 @@ namespace StrongmanApp.Controllers
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(aspNetUser);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!AspNetUserExists(aspNetUser.Id))
                     {
                         return NotFound();
                     }
@@ -122,11 +115,10 @@ namespace StrongmanApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryId);
-            return View(user);
+            return View(aspNetUser);
         }
 
-        // GET: Users/Delete/5
+        // GET: AspNetUsers/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -134,35 +126,34 @@ namespace StrongmanApp.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .Include(u => u.Country)
+            var aspNetUser = await _context.AspNetUsers
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (aspNetUser == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(aspNetUser);
         }
 
-        // POST: Users/Delete/5
+        // POST: AspNetUsers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
+            var aspNetUser = await _context.AspNetUsers.FindAsync(id);
+            if (aspNetUser != null)
             {
-                _context.Users.Remove(user);
+                _context.AspNetUsers.Remove(aspNetUser);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(string id)
+        private bool AspNetUserExists(string id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.AspNetUsers.Any(e => e.Id == id);
         }
     }
 }
