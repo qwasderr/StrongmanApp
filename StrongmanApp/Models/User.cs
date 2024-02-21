@@ -9,11 +9,11 @@ public partial class User
 
     public string Name { get; set; } = null!;
 
-    public DateOnly BirthDate { get; set; }
+    public DateOnly? BirthDate { get; set; }
 
     public string Email { get; set; } = null!;
 
-    public bool IsContestant { get; set; }
+    public bool? IsContestant { get; set; }
 
     public int? Age { get; set; }
 
@@ -25,13 +25,13 @@ public partial class User
 
     public int? LastCompYear { get; set; }
 
-    public int CountryId { get; set; }
+    public int? CountryId { get; set; }
 
     public string? PhotoUrl { get; set; }
 
-    public string IsAdmin { get; set; } = null!;
+    public string? IsAdmin { get; set; } = null!;
 
-    public string Sex { get; set; } = null!;
+    public string? Sex { get; set; } = null!;
 
     public string? SportCategory { get; set; }
 
