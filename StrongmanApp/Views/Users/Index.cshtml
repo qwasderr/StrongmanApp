@@ -40,22 +40,10 @@
                 @Html.DisplayNameFor(model => model.LastCompYear)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PhotoUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsAdmin)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Sex)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SportCategory)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.LastUpdate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsDeleted)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Country)
@@ -93,26 +81,21 @@
             <td>
                 @Html.DisplayFor(modelItem => item.LastCompYear)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhotoUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsAdmin)
-            </td>
+           
+            
             <td>
                 @Html.DisplayFor(modelItem => item.Sex)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SportCategory)
-            </td>
+           
             <td>
                 @Html.DisplayFor(modelItem => item.LastUpdate)
             </td>
+            
             <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Country.Id)
+                @{
+                   
+                }
+                @Html.DisplayFor(modelItem => item.Country.Name)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

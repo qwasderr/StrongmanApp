@@ -24,13 +24,13 @@
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" type="hidden" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsContestant" /> @Html.DisplayNameFor(model => model.IsContestant)
+                    @Html.CheckBox("IsContestant", true) @Html.DisplayNameFor(model => model.IsContestant)
+                   
                 </label>
             </div>
             <div class="form-group">
@@ -49,13 +49,13 @@
                 <span asp-validation-for="Height" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FirstCompYear" class="control-label"></label>
-                <input asp-for="FirstCompYear" class="form-control" />
+                
+                <input asp-for="FirstCompYear" type="hidden" class="form-control" />
                 <span asp-validation-for="FirstCompYear" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LastCompYear" class="control-label"></label>
-                <input asp-for="LastCompYear" class="form-control" />
+                
+                <input asp-for="LastCompYear" type="hidden" class="form-control" />
                 <span asp-validation-for="LastCompYear" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -69,28 +69,33 @@
                 <span asp-validation-for="PhotoUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IsAdmin" class="control-label"></label>
-                <input asp-for="IsAdmin" class="form-control" />
+               
+                <input asp-for="IsAdmin" type="hidden" class="form-control" />
                 <span asp-validation-for="IsAdmin" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Sex" class="control-label"></label>
-                <input asp-for="Sex" class="form-control" />
+                
+                @Html.DropDownList("Sex", new List<SelectListItem>
+                {
+                new SelectListItem { Text = "Male", Value = "Male", Selected=true},
+                new SelectListItem { Text = "Female", Value = "Female"}
+                })
                 <span asp-validation-for="Sex" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SportCategory" class="control-label"></label>
-                <input asp-for="SportCategory" class="form-control" />
+               
+                <input asp-for="SportCategory" type="hidden" class="form-control" />
                 <span asp-validation-for="SportCategory" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LastUpdate" class="control-label"></label>
-                <input asp-for="LastUpdate" class="form-control" />
+               
+                <input asp-for="LastUpdate" type="hidden" class="form-control" />
                 <span asp-validation-for="LastUpdate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IsDeleted" class="control-label"></label>
-                <input asp-for="IsDeleted" class="form-control" />
+                
+                <input asp-for="IsDeleted" type="hidden" class="form-control" />
                 <span asp-validation-for="IsDeleted" class="text-danger"></span>
             </div>
             <div class="form-group">

@@ -137,7 +137,8 @@ public partial class SportDbContext : DbContext
             entity.Property(e => e.FederationId).HasColumnName("FederationID");
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.TownId).HasColumnName("TownID");
-            entity.Property(e => e.VideoId).HasColumnName("VideoID");
+            entity.Property(e => e.VideoUrl).HasColumnName("VideoUrl");
+            //entity.Property(e => e.VideoId).HasColumnName("VideoID");
 
             entity.HasOne(d => d.Federation).WithMany(p => p.Competitions)
                 .HasForeignKey(d => d.FederationId)
@@ -148,9 +149,9 @@ public partial class SportDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Competitions_Towns");
 
-            entity.HasOne(d => d.Video).WithMany(p => p.Competitions)
-                .HasForeignKey(d => d.VideoId)
-                .HasConstraintName("FK_Competitions_Videos");
+            //entity.HasOne(d => d.Video).WithMany(p => p.Competitions)
+            //    .HasForeignKey(d => d.VideoId)
+            //    .HasConstraintName("FK_Competitions_Videos");
         });
 
         modelBuilder.Entity<CompetitionEvent>(entity =>

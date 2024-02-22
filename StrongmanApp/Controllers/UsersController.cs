@@ -26,7 +26,7 @@ namespace StrongmanApp.Controllers
             {
                 list1.Add(user.Id);
             }
-            var sportDbContext = _context.Users.Where(a=>list1.Contains(a.Id));
+            var sportDbContext = _context.Users.Where(a=>list1.Contains(a.Id)).Include(a=>a.Country);
             return View(await sportDbContext.ToListAsync());
         }
 
@@ -86,7 +86,7 @@ namespace StrongmanApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryId);
+            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Name", _context.Countries.Where(a=>a.Name!=null));
             return View(user);
         }
 
@@ -101,12 +101,15 @@ namespace StrongmanApp.Controllers
             {
                 return NotFound();
             }
-
+            user.Country=_context.Countries.Where(a=>a.Id==user.CountryId).FirstOrDefault();
+            ModelState.Remove("Country");
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var user2=_context.AspNetUsers.Where(a=>a.Id == user.Id).FirstOrDefault();
                     _context.Update(user);
+                    user2.UserName = user.Name; _context.Update(user2);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -122,7 +125,8 @@ namespace StrongmanApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryId);
+            //ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryId);
+            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Name", _context.Countries.Where(a => a.Name != null));
             return View(user);
         }
 

@@ -1,10 +1,18 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using System.Security.Principal
+@using System.Security.Claims;
+
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
-
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
+        <li class="nav-item">
+            @{
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            @Html.ActionLink("Profile settings", "Edit", "Users",new {id=userId}, new { @class = "nav-link text-dark" })
+        </li>
     <li class="nav-item">
         <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
     </li>

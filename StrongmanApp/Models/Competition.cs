@@ -19,7 +19,8 @@ public partial class Competition
 
     public int? FederationId { get; set; }
 
-    public int? VideoId { get; set; }
+    //public int? VideoId { get; set; }
+    public string? VideoUrl { get; set; }
 
     public virtual ICollection<CompetitionEvent> CompetitionEvents { get; set; } = new List<CompetitionEvent>();
 
@@ -29,5 +30,5 @@ public partial class Competition
 
     public virtual Town Town { get; set; } = null!;
 
-    public virtual Video? Video { get; set; }
+    //public virtual Video? Video { get; set; }
 }

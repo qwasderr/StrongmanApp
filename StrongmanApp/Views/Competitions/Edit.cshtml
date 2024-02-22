@@ -1,0 +1,79 @@
+﻿@model StrongmanApp.Models.Competition
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Competition</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Division" class="control-label"></label>
+                
+                @Html.DropDownList("Division", new List<SelectListItem>
+                {
+                new SelectListItem { Text = "Open", Value = "Open", Selected=true},
+                new SelectListItem { Text = "U80", Value = "U80"},
+                new SelectListItem { Text = "U95", Value = "U95"},
+                new SelectListItem { Text = "U110", Value = "U110"},
+                new SelectListItem { Text = "O110", Value = "O110"},
+                new SelectListItem { Text = "Veterans", Value = "Veterans"}
+                })
+                <span asp-validation-for="Division" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompScale" class="control-label"></label>
+                
+                @Html.DropDownList("CompScale", new List<SelectListItem>
+                {
+                new SelectListItem { Text = "Local", Value = "Local", Selected=true},
+                new SelectListItem { Text = "National", Value = "National"},
+                new SelectListItem { Text = "International", Value = "International"}
+                })
+                <span asp-validation-for="CompScale" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label"></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TownId" class="control-label"></label>
+                <select asp-for="TownId" class="form-control" asp-items="ViewBag.TownId"></select>
+                <span asp-validation-for="TownId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FederationId" class="control-label"></label>
+                <select asp-for="FederationId" class="form-control" asp-items="ViewBag.FederationId"></select>
+                <span asp-validation-for="FederationId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VideoUrl" class="control-label"></label>
+                <select asp-for="VideoUrl" class="form-control" asp-items="ViewBag.VideoId"></select>
+                <span asp-validation-for="VideoUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
