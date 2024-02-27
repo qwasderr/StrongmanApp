@@ -21,6 +21,8 @@ public partial class SportDbContext : DbContext
 
     public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
 
+   
+
     public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
 
     public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
@@ -73,6 +75,8 @@ public partial class SportDbContext : DbContext
 
             entity.HasOne(d => d.Role).WithMany(p => p.AspNetRoleClaims).HasForeignKey(d => d.RoleId);
         });
+
+       
 
         modelBuilder.Entity<AspNetUser>(entity =>
         {
@@ -137,8 +141,7 @@ public partial class SportDbContext : DbContext
             entity.Property(e => e.FederationId).HasColumnName("FederationID");
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.TownId).HasColumnName("TownID");
-            entity.Property(e => e.VideoUrl).HasColumnName("VideoUrl");
-            //entity.Property(e => e.VideoId).HasColumnName("VideoID");
+            entity.Property(e => e.VideoUrl).HasMaxLength(500);
 
             entity.HasOne(d => d.Federation).WithMany(p => p.Competitions)
                 .HasForeignKey(d => d.FederationId)
@@ -148,10 +151,6 @@ public partial class SportDbContext : DbContext
                 .HasForeignKey(d => d.TownId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Competitions_Towns");
-
-            //entity.HasOne(d => d.Video).WithMany(p => p.Competitions)
-            //    .HasForeignKey(d => d.VideoId)
-            //    .HasConstraintName("FK_Competitions_Videos");
         });
 
         modelBuilder.Entity<CompetitionEvent>(entity =>
@@ -325,13 +324,14 @@ public partial class SportDbContext : DbContext
 
             entity.HasOne(d => d.Country).WithMany(p => p.Users)
                 .HasForeignKey(d => d.CountryId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Users_Countries");
         });
 
         modelBuilder.Entity<Video>(entity =>
         {
-            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("ID");
             entity.Property(e => e.Details).HasMaxLength(500);
             entity.Property(e => e.Url)
                 .HasMaxLength(500)

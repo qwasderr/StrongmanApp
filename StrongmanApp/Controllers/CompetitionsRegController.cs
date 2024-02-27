@@ -6,15 +6,16 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Bcpg;
 using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
 {
-    public class CompetitionsController : Controller
+    public class CompetitionsRegController : Controller
     {
         private readonly SportDbContext _context;
 
-        public CompetitionsController(SportDbContext context)
+        public CompetitionsRegController(SportDbContext context)
         {
             _context = context;
         }
@@ -23,6 +24,7 @@ namespace StrongmanApp.Controllers
         public async Task<IActionResult> Index()
         {
             var sportDbContext = _context.Competitions.Include(c => c.Federation).Include(c => c.Town);
+            //var sportDbContext = _context.Competitions.Include(c => c.Federation).Include(c => c.Town).Where(a=>a.Date> DateOnly.FromDateTime(DateTime.Now));
             return View(await sportDbContext.ToListAsync());
         }
 
@@ -42,7 +44,7 @@ namespace StrongmanApp.Controllers
             {
                 return NotFound();
             }
-
+            ViewData["MethodRef"] = this.isRegistred;
             return View(competition);
         }
 
@@ -62,8 +64,6 @@ namespace StrongmanApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Division,CompScale,Date,TownId,FederationId,VideoUrl")] Competition competition)
         {
-            competition.Town = _context.Towns.Where(a => a.Id == competition.TownId).FirstOrDefault();
-            ModelState.Remove("Town");
             if (ModelState.IsValid)
             {
                 _context.Add(competition);
@@ -150,6 +150,7 @@ namespace StrongmanApp.Controllers
             var competition = await _context.Competitions
                 .Include(c => c.Federation)
                 .Include(c => c.Town)
+                .Include(c => c.VideoUrl)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (competition == null)
             {
@@ -177,6 +178,50 @@ namespace StrongmanApp.Controllers
         private bool CompetitionExists(int id)
         {
             return _context.Competitions.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> Register(string? id, int idComp)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            //ViewData["FederationId"] = new SelectList(_context.Federations, "Id", "Name", _context.Federations.Where(a => a.Name != null));
+            //ViewData["TownId"] = new SelectList(_context.Towns, "Id", "Name", _context.Towns.Where(a => a.Name != null));
+            Lineup ln=new Lineup();
+            ln.IsConfirmed = 0;
+            ln.UserId = id;
+            ln.CompetitionId = idComp;
+            ln.Competition=_context.Competitions.Where(a=>a.Id==idComp).FirstOrDefault();
+            ln.User = _context.Users.Where(a => a.Id == id).FirstOrDefault();
+            _context.Lineups.Add(ln);
+            await _context.SaveChangesAsync();
+            //ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Url", _context.Videos.Where(a => a.Url != null));
+            return RedirectToAction(nameof(Index));
+        }
+        public bool isRegistred(string UserId, int CompId)
+        {
+           var ln=_context.Lineups.Where(a=>a.UserId == UserId && a.CompetitionId==CompId).FirstOrDefault();
+            if (ln == null) return false;
+            return true;
+        }
+        
+        public async Task<IActionResult> DeleteReg(string? id, int idComp)
+        {
+            var ln = _context.Lineups.Where(a=>a.UserId==id && a.CompetitionId==idComp).FirstOrDefault();
+            if (ln != null)
+            {
+                _context.Lineups.Remove(ln);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

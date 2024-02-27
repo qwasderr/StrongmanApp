@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace StrongmanApp.Models;
 
@@ -14,7 +16,9 @@ public partial class Lineup
     public string? Details { get; set; }
 
     public int IsConfirmed { get; set; }
-
+    [Display(Name = "Registration date")]
+    [DataType(DataType.Date)]
+    [Column(TypeName = "Date")]
     public DateOnly? RegistrationDate { get; set; }
 
     public int? Place { get; set; }

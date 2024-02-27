@@ -11,8 +11,6 @@ public partial class Video
 
     public string? Details { get; set; }
 
-    public virtual ICollection<Competition> Competitions { get; set; } = new List<Competition>();
-
     public virtual ICollection<EventVideo> EventVideos { get; set; } = new List<EventVideo>();
 
     public virtual ICollection<News> News { get; set; } = new List<News>();

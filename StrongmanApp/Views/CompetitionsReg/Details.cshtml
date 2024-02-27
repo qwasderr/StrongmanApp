@@ -1,7 +1,15 @@
 ﻿@model StrongmanApp.Models.Competition
-
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Principal
+@using System.Security.Claims;
+@using StrongmanApp.Controllers;
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 @{
     ViewData["Title"] = "Details";
+
+    var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var compId = Model.Id;        
 }
 
 <h1>Details</h1>
@@ -55,6 +63,13 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a> | @if (SignInManager.IsSignedIn(User) && !ViewBag.MethodRef(userId,compId))
+    {
+        <a asp-action="Register" asp-route-id="@userId" asp-route-idComp="@compId">Register</a>
+    }
+    else if (ViewBag.MethodRef(userId, compId))
+    {
+        <a asp-action="DeleteReg" asp-route-id="@userId" asp-route-idComp="@compId">Cancel Registration</a>
+    }
+
 </div>
