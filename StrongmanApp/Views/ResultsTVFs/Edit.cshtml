@@ -1,0 +1,59 @@
+﻿@model StrongmanApp.Models.ResultsTVF
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ResultsTVF</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <label asp-for="athlete_ID" class="control-label"></label>
+                <input asp-for="athlete_ID" class="form-control" />
+                <span asp-validation-for="athlete_ID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="athlete_name" class="control-label"></label>
+                <input asp-for="athlete_name" class="form-control" />
+                <span asp-validation-for="athlete_name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="event_name" class="control-label"></label>
+                <input asp-for="event_name" class="form-control" />
+                <span asp-validation-for="event_name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="event_result" class="control-label"></label>
+                <input asp-for="event_result" class="form-control" />
+                <span asp-validation-for="event_result" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="event_points" class="control-label"></label>
+                <input asp-for="event_points" class="form-control" />
+                <span asp-validation-for="event_points" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="total_pts" class="control-label"></label>
+                <input asp-for="total_pts" class="form-control" />
+                <span asp-validation-for="total_pts" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

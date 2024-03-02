@@ -5,7 +5,8 @@ namespace StrongmanApp.Models;
 
 public partial class AspNetUserToken
 {
-    public string UserId { get; set; } = null!;
+    //public string UserId { get; set; } = null!;
+    public int UserId { get; set; }
 
     public string LoginProvider { get; set; } = null!;
 

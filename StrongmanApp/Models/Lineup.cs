@@ -11,8 +11,8 @@ public partial class Lineup
 
     public int CompetitionId { get; set; }
 
-    public string UserId { get; set; } = null!;
-
+    //public string UserId { get; set; } = null!;
+    public int UserId {  get; set; }
     public string? Details { get; set; }
 
     public int IsConfirmed { get; set; }

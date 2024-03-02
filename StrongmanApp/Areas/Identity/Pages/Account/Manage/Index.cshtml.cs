@@ -9,17 +9,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using StrongmanApp.Models;
 
 namespace StrongmanApp.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
         public IndexModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            UserManager<User> userManager,
+            SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -29,7 +30,7 @@ namespace StrongmanApp.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-       
+        public string Username { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -55,20 +56,19 @@ namespace StrongmanApp.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            /// 
-            public string Username { get; set; }
-
             //[Phone]
             //[Display(Name = "Phone number")]
             //public string PhoneNumber { get; set; }
+
+            public string Username { get; set; }
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(User user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
-            //var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-           
+            Username = userName;
 
             Input = new InputModel
             {
@@ -113,16 +113,6 @@ namespace StrongmanApp.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }*/
-            var Username = await _userManager.GetUserNameAsync(user);
-            if (Input.Username != Username)
-            {
-                var setUsernameResult = await _userManager.SetUserNameAsync(user, Input.Username);
-                if (!setUsernameResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set username.";
-                    return RedirectToPage();
-                }
-            }
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";

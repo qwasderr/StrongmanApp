@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StrongmanApp.Models;
+using Microsoft.AspNetCore.Authorization;
 //using Microsoft.AspNet.Identity;
 
 namespace StrongmanApp.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class AspNetRolesController : Controller
     {
         private readonly SportDbContext _context;
@@ -29,7 +31,7 @@ namespace StrongmanApp.Controllers
         }
 
         // GET: AspNetRoles/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null)
             {
@@ -97,7 +99,7 @@ namespace StrongmanApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,NormalizedName,ConcurrencyStamp")] AspNetRole aspNetRole)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,NormalizedName,ConcurrencyStamp")] AspNetRole aspNetRole)
         {
             if (id != aspNetRole.Id)
             {
@@ -134,7 +136,7 @@ namespace StrongmanApp.Controllers
         }
 
         // GET: AspNetRoles/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id == null)
             {
@@ -166,7 +168,7 @@ namespace StrongmanApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AspNetRoleExists(string id)
+        private bool AspNetRoleExists(int id)
         {
             return _context.AspNetRoles.Any(e => e.Id == id);
         }

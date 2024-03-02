@@ -180,7 +180,7 @@ namespace StrongmanApp.Controllers
             return _context.Competitions.Any(e => e.Id == id);
         }
 
-        public async Task<IActionResult> Register(string? id, int idComp)
+        public async Task<IActionResult> Register(int id, int idComp)
         {
             if (id == null)
             {
@@ -205,14 +205,14 @@ namespace StrongmanApp.Controllers
             //ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Url", _context.Videos.Where(a => a.Url != null));
             return RedirectToAction(nameof(Index));
         }
-        public bool isRegistred(string UserId, int CompId)
+        public bool isRegistred(int UserId, int CompId)
         {
            var ln=_context.Lineups.Where(a=>a.UserId == UserId && a.CompetitionId==CompId).FirstOrDefault();
             if (ln == null) return false;
             return true;
         }
         
-        public async Task<IActionResult> DeleteReg(string? id, int idComp)
+        public async Task<IActionResult> DeleteReg(int? id, int idComp)
         {
             var ln = _context.Lineups.Where(a=>a.UserId==id && a.CompetitionId==idComp).FirstOrDefault();
             if (ln != null)

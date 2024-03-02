@@ -4,7 +4,7 @@
 
 using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
+using StrongmanApp.Models;
 namespace  StrongmanApp.Areas.Identity.Pages.Account.Manage
 {
     /// <summary>

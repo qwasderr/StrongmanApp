@@ -12,33 +12,43 @@ namespace StrongmanApp
         {
             _context = context;
         }*/
-        public static async Task InitializeAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, SportDbContext _context)
+        public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, SportDbContext _context, IUserStore<User> _userStore)
         {
            
             string adminEmail = "admin@gmail.com";
             string password = "A123@a";
             if (await roleManager.FindByNameAsync("admin") == null)
             {
-                await roleManager.CreateAsync(new IdentityRole("admin"));
+                var role = new IdentityRole<int>();
+                role.Name = "admin";
+                //await roleManager.CreateAsync(new IdentityRole("admin"));
+                await roleManager.CreateAsync(role);
             }
             if (await roleManager.FindByNameAsync("user") == null)
             {
-                await roleManager.CreateAsync(new IdentityRole("user"));
+                //await roleManager.CreateAsync(new IdentityRole("user"));
+                var role = new IdentityRole<int>();
+                role.Name = "user";
+                //await roleManager.CreateAsync(new IdentityRole("admin"));
+                await roleManager.CreateAsync(role);
             }
             if (await userManager.FindByNameAsync(adminEmail) == null)
             {
-                var user = Activator.CreateInstance<IdentityUser>();
+                //var user = Activator.CreateInstance<IdentityUser<int>>();
+                var user = Activator.CreateInstance<User>();
+                var emailstore = (IUserEmailStore<User>)_userStore;
+                await _userStore.SetUserNameAsync(user, adminEmail, CancellationToken.None);
+                await emailstore.SetEmailAsync(user, adminEmail, CancellationToken.None);
                 user.EmailConfirmed = true;
-                user.Email = adminEmail;
-                user.UserName = "admin";
+                //user.Email = adminEmail;
+                //user.NormalizedEmail= adminEmail.ToUpper();
+                //user.UserName = "admin";
+                user.Name = "admin";
+                //user.NormalizedUserName = "admin".ToUpper();
                 var result = await userManager.CreateAsync(user, password);
+                
                 if (result.Succeeded)
                 {
-                    User user1 = new User();
-                    user1.Name = "admin";
-                    user1.Id = user.Id;
-                    user1.Email = adminEmail;
-                    _context.Add(user1);
                     _context.SaveChanges();
                     await userManager.AddToRoleAsync(user, "admin");
                 }

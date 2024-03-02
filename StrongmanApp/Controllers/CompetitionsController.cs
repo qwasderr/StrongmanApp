@@ -22,6 +22,7 @@ namespace StrongmanApp.Controllers
         // GET: Competitions
         public async Task<IActionResult> Index()
         {
+            var res=_context.ResultsTVF(5).ToList();
             var sportDbContext = _context.Competitions.Include(c => c.Federation).Include(c => c.Town);
             return View(await sportDbContext.ToListAsync());
         }

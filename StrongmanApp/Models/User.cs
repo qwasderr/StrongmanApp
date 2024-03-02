@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StrongmanApp.Models;
 
-public partial class User
+public partial class User: IdentityUser<int>
 {
-    public string Id { get; set; } = null!;
+    //public string Id { get; set; } = null!;
+    //public int Id { get; set; }
     [Display(Name = "Name")]
     [Required(ErrorMessage = "The field can't be empty")]
     public string Name { get; set; } = null!;
@@ -16,7 +18,7 @@ public partial class User
     [Column(TypeName = "Date")]
     public DateOnly? BirthDate { get; set; }
 
-    public string Email { get; set; } = null!;
+    public string? Email2 { get; set; }
     [Display(Name = "Are you planning to participate in the competition?")]
     public bool? IsContestant { get; set; }
     [Display(Name = "Age")]

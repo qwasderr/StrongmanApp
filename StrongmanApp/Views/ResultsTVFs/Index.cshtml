@@ -1,0 +1,132 @@
+﻿@model IEnumerable<StrongmanApp.Models.ResultsTVF>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 style="text-align:center">Results</h1>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js" type="text/javascript"></script>
+
+
+
+<script>
+ DataTable.render.event = function ( eventnum ) {
+    return function ( data, type, row ) {
+       
+        return data[eventnum].result;
+    };
+}; 
+ DataTable.render.pts = function ( eventnum ) {
+    return function ( data, type, row ) {
+       
+        return data[eventnum].eventRes;
+    };
+};
+    let string = "/api/value/" + @ViewBag.CompId;
+$.ajax({
+ 
+            type: "GET",
+            
+            url: string,
+    success: function (response) {
+        console.log(string);
+        console.log(response);
+        if (response.data.length == 0) {
+                const element = document.getElementById("myTable");
+                element.remove();
+            const el2 = document.getElementById("p1");
+            el2.style.display = "block";
+        }
+        else {
+            var columnNames = [];
+            var columns = [];
+            columns.push({
+                data: "athlete_ID",
+                title: "Athlete Id", visible: false
+            });
+            columns.push({
+                data: "athlete_name",
+                title: "Athlete Name"
+            });
+
+            var size = response.data[0].events.length;
+            var i = 0;
+            while (i < size) {
+                columnNames.push(response.data[0].events[i].eventName);
+
+                i = i + 1;
+            }
+
+            console.log(columnNames);
+            for (var i in columnNames) {
+
+                columns.push({
+                    searchable: false, orderable: false,
+                    data: "events",
+                    render: DataTable.render.event(i),
+                    title: columnNames[i],
+                });
+                columns.push({
+                    data: "events",
+                    render: DataTable.render.pts(i),
+                    title: "Pts"
+                });
+            }
+            columns.push({
+                data: "total_pts",
+                title: "Total Pts"
+            });
+            console.log(columns);
+            $('#myTable').DataTable({
+                data: response.data,
+                columns: columns,
+                columnDefs: [{ "defaultContent": "-", "targets": "_all" }],
+                pageLength: 25,
+                "order": [$("#myTable").find('tr')[0].cells.length - 1, 'desc']
+            });
+
+        }
+    }    
+        });
+  
+</script>
+<p1 id="p1" style="display:none; font-size:30px">No Data.</p1>
+ <table id="myTable">
+    <thead>
+        <tr>
+           <th>
+                @Html.DisplayNameFor(model => model.athlete_ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.athlete_name)
+            </th>
+            
+            @{
+                int pos2 = 0;
+            }
+            @foreach (var i in Model)
+            {
+                ++pos2;
+                if (pos2 <= Enumerable.Count(ViewBag.EventsId))
+                {
+                    <th>
+                    @Html.DisplayFor(modelItem => i.event_name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.event_points)
+                </th>
+                }
+            }
+            
+            
+            <th>
+                @Html.DisplayNameFor(model => model.total_pts)
+            </th>
+            
+        </tr>
+    </thead>
+    </table>
+        
+
+

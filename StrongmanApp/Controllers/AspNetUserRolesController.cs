@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,12 +11,13 @@ using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class AspNetUserRolesController : Controller
     {
         private readonly SportDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        public AspNetUserRolesController(SportDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly UserManager<IdentityUser<int>> _userManager;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        public AspNetUserRolesController(SportDbContext context, UserManager<IdentityUser<int>> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
             _context = context;
             _userManager = userManager;
@@ -109,7 +110,7 @@ namespace StrongmanApp.Controllers
             var roleid= await _roleManager.FindByNameAsync(aspNetUserRoles.RoleName);
             aspNetUserRoles.RoleId = roleid.Id;
             //var userid = await _userManager.FindByNameAsync(aspNetUserRoles.UserName);
-            aspNetUserRoles.UserId = aspNetUserRoles.UserName;
+            aspNetUserRoles.UserName = aspNetUserRoles.UserName;
             ModelState.Remove("UserId");
             ModelState.Remove("RoleId");
             if (ModelState.IsValid)
@@ -197,7 +198,7 @@ namespace StrongmanApp.Controllers
         }*/
 
         // GET: AspNetUserRoles/Delete/5
-        public async Task<IActionResult> Delete(string userId, string roleId)
+        public async Task<IActionResult> Delete(int userId, int roleId)
         {
             if (userId == null || roleId==null)
             {
@@ -206,8 +207,8 @@ namespace StrongmanApp.Controllers
 
             var aspNetUserRoles = new AspNetUserRoles();
             //var users = _context.AspNetUsers;
-            var userName = await _userManager.FindByIdAsync(userId);
-            var roleName = await _roleManager.FindByIdAsync(roleId);
+            var userName = await _userManager.FindByIdAsync(userId.ToString());
+            var roleName = await _roleManager.FindByIdAsync(roleId.ToString());
             aspNetUserRoles.UserId = userId;
             aspNetUserRoles.RoleId = roleId;
             aspNetUserRoles.UserName = userName.UserName;

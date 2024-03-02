@@ -9,11 +9,11 @@ using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
 {
-    public class AspNetUsersController : Controller
+    public class AspNetUsers2Controller : Controller
     {
         private readonly SportDbContext _context;
 
-        public AspNetUsersController(SportDbContext context)
+        public AspNetUsers2Controller(SportDbContext context)
         {
             _context = context;
         }
@@ -25,7 +25,7 @@ namespace StrongmanApp.Controllers
         }
 
         // GET: AspNetUsers/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null)
             {
@@ -68,7 +68,7 @@ namespace StrongmanApp.Controllers
         }
 
         // GET: AspNetUsers/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
@@ -88,7 +88,7 @@ namespace StrongmanApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] AspNetUser aspNetUser)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] AspNetUser aspNetUser)
         {
             if (id != aspNetUser.Id)
             {
@@ -119,7 +119,7 @@ namespace StrongmanApp.Controllers
         }
 
         // GET: AspNetUsers/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id == null)
             {
@@ -151,7 +151,7 @@ namespace StrongmanApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AspNetUserExists(string id)
+        private bool AspNetUserExists(int id)
         {
             return _context.AspNetUsers.Any(e => e.Id == id);
         }

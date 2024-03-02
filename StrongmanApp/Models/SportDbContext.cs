@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using StrongmanApp.Models;
 
 namespace StrongmanApp.Models;
 
@@ -49,16 +50,22 @@ public partial class SportDbContext : DbContext
 
     public virtual DbSet<Town> Towns { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    //public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<Video> Videos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-JG8P8MC\\SQLEXPRESS; Database=SportDB; Trusted_Connection=True; TrustServerCertificate=True; ");
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-JG8P8MC\\SQLEXPRESS; Database=SportDBS10; Trusted_Connection=True; TrustServerCertificate=True; MultipleActiveResultSets=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        //modelBuilder.Entity<ResultsTVF>().ToView(null);
+        modelBuilder.HasDbFunction(typeof(SportDbContext)
+    .GetMethod(nameof(ResultsTVF)))
+    .HasName("TableRes");
+
+        modelBuilder.Entity<ResultsTVF>(entity => entity.HasKey(x => x.ID));
         modelBuilder.Entity<AspNetRole>(entity =>
         {
             entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
@@ -80,6 +87,7 @@ public partial class SportDbContext : DbContext
 
         modelBuilder.Entity<AspNetUser>(entity =>
         {
+            
             entity.HasIndex(e => e.NormalizedEmail, "EmailIndex");
 
             entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
@@ -101,7 +109,35 @@ public partial class SportDbContext : DbContext
                         j.HasKey("UserId", "RoleId");
                         j.ToTable("AspNetUserRoles");
                         j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
+
+
                     });
+
+
+            entity.ToTable(tb =>
+            {
+                tb.HasTrigger("User_last_updated");
+                tb.HasTrigger("Users_age_update");
+                tb.HasTrigger("user_soft_delete");
+            });
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.CountryId).HasColumnName("CountryID");
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.IsAdmin)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("isAdmin");
+            entity.Property(e => e.IsContestant).HasColumnName("isContestant");
+            entity.Property(e => e.IsDeleted).HasColumnName("isDeleted");
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.PhotoUrl).HasMaxLength(1000);
+            entity.Property(e => e.Sex).HasMaxLength(50);
+            entity.Property(e => e.SportCategory).HasMaxLength(100);
+
+            entity.HasOne(d => d.Country).WithMany(p => p.Users)
+                .HasForeignKey(d => d.CountryId)
+                .HasConstraintName("FK_Users_Countries");
         });
 
         modelBuilder.Entity<AspNetUserClaim>(entity =>
@@ -253,14 +289,13 @@ public partial class SportDbContext : DbContext
 
         modelBuilder.Entity<Result>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable(tb =>
+            entity.HasKey(x => x.Id);
+            entity.ToTable(tb =>
                 {
                     tb.HasTrigger("Results_Insert");
                     tb.HasTrigger("Results_Update");
                 });
-
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.CompetitionId).HasColumnName("CompetitionID");
             entity.Property(e => e.EventId).HasColumnName("EventID");
             entity.Property(e => e.Result1)
@@ -299,7 +334,7 @@ public partial class SportDbContext : DbContext
                 .HasConstraintName("FK_Towns_Countries");
         });
 
-        modelBuilder.Entity<User>(entity =>
+        /*modelBuilder.Entity<User>(entity =>
         {
             entity.ToTable(tb =>
                 {
@@ -318,14 +353,14 @@ public partial class SportDbContext : DbContext
             entity.Property(e => e.IsContestant).HasColumnName("isContestant");
             entity.Property(e => e.IsDeleted).HasColumnName("isDeleted");
             entity.Property(e => e.Name).HasMaxLength(100);
-            entity.Property(e => e.PhotoUrl).HasMaxLength(100);
+            entity.Property(e => e.PhotoUrl).HasMaxLength(1000);
             entity.Property(e => e.Sex).HasMaxLength(50);
             entity.Property(e => e.SportCategory).HasMaxLength(100);
 
             entity.HasOne(d => d.Country).WithMany(p => p.Users)
                 .HasForeignKey(d => d.CountryId)
                 .HasConstraintName("FK_Users_Countries");
-        });
+        });*/
 
         modelBuilder.Entity<Video>(entity =>
         {
@@ -339,7 +374,12 @@ public partial class SportDbContext : DbContext
         });
 
         OnModelCreatingPartial(modelBuilder);
+        
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    public IQueryable<ResultsTVF> ResultsTVF(int competition_id)
+     => FromExpression(() => ResultsTVF(competition_id));
+
+public DbSet<StrongmanApp.Models.ResultsTVF> ResultsTVF_1 { get; set; } = default!;
 }
