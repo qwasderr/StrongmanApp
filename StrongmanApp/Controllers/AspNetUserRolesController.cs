@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+//using StrongmanApp.Context;
 using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
@@ -15,9 +16,9 @@ namespace StrongmanApp.Controllers
     public class AspNetUserRolesController : Controller
     {
         private readonly SportDbContext _context;
-        private readonly UserManager<IdentityUser<int>> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
-        public AspNetUserRolesController(SportDbContext context, UserManager<IdentityUser<int>> userManager, RoleManager<IdentityRole<int>> roleManager)
+        public AspNetUserRolesController(SportDbContext context, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
             _context = context;
             _userManager = userManager;
@@ -27,7 +28,7 @@ namespace StrongmanApp.Controllers
         // GET: AspNetUserRoles
         public async Task<IActionResult> Index()
         {
-            var usersAndRoles = new List<AspNetUserRoles>();
+            var usersAndRoles = new List<UserRoles>();
             //var users = _context.AspNetUsers;
             var users = _userManager.Users.ToList();
             foreach (var user in users)
@@ -36,7 +37,7 @@ namespace StrongmanApp.Controllers
                 foreach (var role in list)
                 {
                     var roleId = await _roleManager.FindByNameAsync(role);
-                    usersAndRoles.Add(new AspNetUserRoles
+                    usersAndRoles.Add(new UserRoles
                     {
                         UserId = user.Id,
                         RoleId=roleId.Id,
@@ -105,7 +106,7 @@ namespace StrongmanApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserName,RoleName")] AspNetUserRoles aspNetUserRoles)
+        public async Task<IActionResult> Create([Bind("UserName,RoleName")] UserRoles aspNetUserRoles)
         {
             var roleid= await _roleManager.FindByNameAsync(aspNetUserRoles.RoleName);
             aspNetUserRoles.RoleId = roleid.Id;
@@ -205,7 +206,7 @@ namespace StrongmanApp.Controllers
                 return NotFound();
             }
 
-            var aspNetUserRoles = new AspNetUserRoles();
+            var aspNetUserRoles = new UserRoles();
             //var users = _context.AspNetUsers;
             var userName = await _userManager.FindByIdAsync(userId.ToString());
             var roleName = await _roleManager.FindByIdAsync(roleId.ToString());

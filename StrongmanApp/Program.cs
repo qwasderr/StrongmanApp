@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using StrongmanApp.Data;
 using StrongmanApp.Models;
 using StrongmanApp.Services;
 using StrongmanApp;
@@ -14,8 +13,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<SportDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+//builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole<int>>().AddEntityFrameworkStores<SportDbContext>();
+//builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -42,6 +42,7 @@ using (var scope = app.Services.CreateScope())
         var userStore = services.GetRequiredService<IUserStore<User>>();
         var rolesManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
         var dbContext = scope.ServiceProvider.GetService<SportDbContext>();
+        //var dbContext = scope.ServiceProvider.GetService<ApplicationDbContext>();
         await RoleInit.InitializeAsync(userManager, rolesManager, dbContext,userStore);
     }
     catch (Exception ex)
@@ -71,7 +72,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Events}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();

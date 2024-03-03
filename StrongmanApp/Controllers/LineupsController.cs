@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+//using StrongmanApp.Context;
 using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class LineupsController : Controller
     {
         private readonly SportDbContext _context;
@@ -65,6 +68,11 @@ namespace StrongmanApp.Controllers
             lineup.Competition = _context.Competitions.Where(a => a.Id == lineup.CompetitionId).FirstOrDefault();
             ModelState.Remove("User");
             ModelState.Remove("Competition");
+            lineup.RegistrationDate = DateTime.Now;
+            if (_context.Lineups.Where(a=>a.UserId == lineup.UserId && a.CompetitionId == lineup.CompetitionId).Count() > 0)
+            {
+                ModelState.AddModelError("UserId", "This athlete has already registered for this competition");
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(lineup);
@@ -92,6 +100,7 @@ namespace StrongmanApp.Controllers
                 return NotFound();
             }
             ViewData["CompetitionId"] = new SelectList(_context.Competitions, "Id", "Name", _context.Competitions.Where(a=>a.Id!=null));
+            ViewData["UsId"] = _context.Users.Where(a => a.Id == _context.Lineups.Where(a => a.Id == id).FirstOrDefault().UserId).FirstOrDefault();
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", _context.Users.Where(a => a.Id != null));
             return View(lineup);
         }
@@ -101,7 +110,7 @@ namespace StrongmanApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CompetitionId,UserId,Details,IsConfirmed,RegistrationDate,Place,Points")] Lineup lineup)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,CompetitionId,UserId,Details,IsConfirmed,RegistrationDate,Place,Points")] Lineup lineup, int userId)
         {
             if (id != lineup.Id)
             {
@@ -111,6 +120,10 @@ namespace StrongmanApp.Controllers
             lineup.Competition = _context.Competitions.Where(a => a.Id == lineup.CompetitionId).FirstOrDefault();
             ModelState.Remove("User");
             ModelState.Remove("Competition");
+            if (_context.Lineups.Where(a => a.UserId == lineup.UserId && a.CompetitionId == lineup.CompetitionId).Count() > 0 && (userId!=lineup.UserId))
+            {
+                ModelState.AddModelError("UserId", "This athlete has already registered for this competition");
+            }
             if (ModelState.IsValid)
             {
                 try

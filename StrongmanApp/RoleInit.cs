@@ -1,5 +1,6 @@
 ﻿//using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity;
+//using StrongmanApp.Context;
 using StrongmanApp.Models;
 
 namespace StrongmanApp
@@ -22,7 +23,7 @@ namespace StrongmanApp
                 var role = new IdentityRole<int>();
                 role.Name = "admin";
                 //await roleManager.CreateAsync(new IdentityRole("admin"));
-                await roleManager.CreateAsync(role);
+                var res= await roleManager.CreateAsync(role);
             }
             if (await roleManager.FindByNameAsync("user") == null)
             {

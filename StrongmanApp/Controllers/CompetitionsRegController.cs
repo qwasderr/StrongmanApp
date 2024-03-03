@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Bcpg;
+//using StrongmanApp.Context;
 using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
@@ -47,7 +49,7 @@ namespace StrongmanApp.Controllers
             ViewData["MethodRef"] = this.isRegistred;
             return View(competition);
         }
-
+        [Authorize(Roles = "admin")]
         // GET: Competitions/Create
         public IActionResult Create()
         {
@@ -56,7 +58,7 @@ namespace StrongmanApp.Controllers
             //ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Id");
             return View();
         }
-
+        [Authorize(Roles = "admin")]
         // POST: Competitions/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -77,7 +79,7 @@ namespace StrongmanApp.Controllers
             //ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Id", competition.VideoId);
             return View(competition);
         }
-
+        [Authorize(Roles = "admin")]
         // GET: Competitions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -96,7 +98,7 @@ namespace StrongmanApp.Controllers
             //ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Url", _context.Videos.Where(a => a.Url != null));
             return View(competition);
         }
-
+        [Authorize(Roles = "admin")]
         // POST: Competitions/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -138,7 +140,7 @@ namespace StrongmanApp.Controllers
             //ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Url", _context.Videos.Where(a => a.Url != null));
             return View(competition);
         }
-
+        [Authorize(Roles = "admin")]
         // GET: Competitions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -159,7 +161,7 @@ namespace StrongmanApp.Controllers
 
             return View(competition);
         }
-
+        [Authorize(Roles = "admin")]
         // POST: Competitions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -200,6 +202,7 @@ namespace StrongmanApp.Controllers
             ln.CompetitionId = idComp;
             ln.Competition=_context.Competitions.Where(a=>a.Id==idComp).FirstOrDefault();
             ln.User = _context.Users.Where(a => a.Id == id).FirstOrDefault();
+            ln.RegistrationDate = DateTime.Today;
             _context.Lineups.Add(ln);
             await _context.SaveChangesAsync();
             //ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Url", _context.Videos.Where(a => a.Url != null));

@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+//using StrongmanApp.Context;
 using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
@@ -45,7 +47,7 @@ namespace StrongmanApp.Controllers
 
             return View(result);
         }
-
+        [Authorize(Roles = "admin")]
         // GET: Results/Create
         public IActionResult Create()
         {
@@ -54,7 +56,7 @@ namespace StrongmanApp.Controllers
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name");
             return View();
         }
-
+        [Authorize(Roles = "admin")]
         // POST: Results/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -79,7 +81,7 @@ namespace StrongmanApp.Controllers
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", result.UserId);
             return View(result);
         }
-
+        [Authorize(Roles = "admin")]
         // GET: Results/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -98,7 +100,7 @@ namespace StrongmanApp.Controllers
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", result.UserId);
             return View(result);
         }
-
+        [Authorize(Roles = "admin")]
         // POST: Results/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -144,7 +146,7 @@ namespace StrongmanApp.Controllers
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", result.UserId);
             return View(result);
         }
-
+        [Authorize(Roles = "admin")]
         // GET: Results/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -165,7 +167,7 @@ namespace StrongmanApp.Controllers
 
             return View(result);
         }
-
+        [Authorize(Roles = "admin")]
         // POST: Results/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -174,6 +176,12 @@ namespace StrongmanApp.Controllers
             var result = await _context.Results.FindAsync(id);
             if (result != null)
             {
+                var ln=_context.Lineups.Where(a => a.UserId == result.UserId && a.CompetitionId == result.CompetitionId).FirstOrDefault();
+                if (ln!=null)
+                {
+                    ln.Place = null;
+                    ln.Points = null;
+                }
                 _context.Results.Remove(result);
             }
 

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+//using StrongmanApp.Context;
 using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
@@ -45,7 +47,7 @@ namespace StrongmanApp.Controllers
 
             return View(competitionEvent);
         }
-
+        [Authorize(Roles = "admin")]
         // GET: CompetitionEvents/Create
         public IActionResult Create()
         {
@@ -55,7 +57,7 @@ namespace StrongmanApp.Controllers
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Name");
             return View();
         }
-
+        [Authorize(Roles = "admin")]
         // POST: CompetitionEvents/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -79,7 +81,7 @@ namespace StrongmanApp.Controllers
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Name");
             return View(competitionEvent);
         }
-
+        [Authorize(Roles = "admin")]
         // GET: CompetitionEvents/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -100,7 +102,7 @@ namespace StrongmanApp.Controllers
            
             return View(competitionEvent);
         }
-
+        [Authorize(Roles = "admin")]
         // POST: CompetitionEvents/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -142,7 +144,7 @@ namespace StrongmanApp.Controllers
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Name", _context.Events.Where(a => a.Name != null));
             return View(competitionEvent);
         }
-
+        [Authorize(Roles = "admin")]
         // GET: CompetitionEvents/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -162,7 +164,7 @@ namespace StrongmanApp.Controllers
 
             return View(competitionEvent);
         }
-
+        [Authorize(Roles = "admin")]
         // POST: CompetitionEvents/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

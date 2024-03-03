@@ -4,8 +4,8 @@
     {
         
         public string EventName { get; set; }
-        public string Result {  get; set; }
-        public float EventRes {  get; set; }
+        public string? Result {  get; set; }
+        public float? EventRes {  get; set; }
 
     }
 }

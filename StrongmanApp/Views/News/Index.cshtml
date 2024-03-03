@@ -1,0 +1,69 @@
+﻿@model IEnumerable<StrongmanApp.Models.News>
+
+@{
+    ViewData["Title"] = "News";
+}
+
+<h1 style="text-align:center">Fresh News</h1>
+
+@if (User.IsInRole("admin")){
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NewsContent)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateModified)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VideoURL)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NewsContent)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateModified)
+            </td>
+            @if (item.VideoURL!=null){
+            <td>
+
+                    <iframe allow="fullscreen;" src=" @Html.DisplayFor(modelItem => item.VideoURL)">
+                    </iframe>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                    @Html.DisplayFor(modelItem => item.VideoURL)
+                    </td>
+                }
+                @if (User.IsInRole("admin"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>  
+                    </td>
+                }
+                
+        </tr>
+}
+    </tbody>
+</table>

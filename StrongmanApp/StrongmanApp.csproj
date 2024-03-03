@@ -8,6 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Context\SportDbContext.cs" />
+    <Compile Remove="Controllers\AspNetRoles1Controller.cs" />
+    <Compile Remove="Controllers\AspNetRolesController.cs" />
+    <Compile Remove="Controllers\AspNetUsers2Controller.cs" />
+    <Compile Remove="Controllers\Users2Controller.cs" />
+    <Compile Remove="Controllers\UsersNRController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\dist\css\bootstrap.min2.css" />
   </ItemGroup>
 
@@ -38,6 +47,8 @@
 
   <ItemGroup>
     <Folder Include="Areas\" />
+    <Folder Include="Context\" />
+    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>

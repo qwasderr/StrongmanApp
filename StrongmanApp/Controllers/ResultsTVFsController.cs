@@ -6,6 +6,7 @@ using DataTables.AspNetCore.Mvc.Binder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+//using StrongmanApp.Context;
 using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
@@ -32,94 +33,125 @@ namespace StrongmanApp.Controllers
             //    recordsFilterd = products.Count();
             //}
             //products = products.Skip(dataRequest.Start).Take(dataRequest.Length);
-            var res = _context.ResultsTVF(compId).ToList();
-            if (res.Count == 0)
+            var lineup = await _context.Lineups.Where(a => a.CompetitionId == compId && a.IsConfirmed == 1).ToListAsync();
+            List<AthlTVF> athlTVF = new List<AthlTVF>();
+            foreach (var athlete in lineup)
             {
-                var lineup =  await _context.Lineups.Where(a => a.CompetitionId == compId && a.IsConfirmed==1).ToListAsync();
-                List<AthlTVF> athlTVF = new List<AthlTVF>();
-                foreach (var athlete in lineup)
+                AthlTVF athl = new AthlTVF();
+                athl.athlete_ID = athlete.UserId;
+                athl.athlete_name = _context.Users.Where(a => a.Id == athlete.UserId).First().Name;
+                List<EventsTVF> events = new List<EventsTVF>();
+                var events2 = _context.CompetitionEvents.Where(a => a.CompetitionId == compId).ToList();
+                float? tot_pts = 0;
+                foreach (var event1 in events2)
                 {
-                    AthlTVF athl = new AthlTVF();
-                    athl.athlete_ID = athlete.UserId;
-                    athl.athlete_name = _context.Users.Where(a => a.Id == athlete.UserId).First().Name;
-                    List<EventsTVF> events = new List<EventsTVF>();
-                    var events2=_context.CompetitionEvents.Where(a=>a.CompetitionId==compId).ToList();
-                    foreach(var event1 in events2)
+                    EventsTVF eventsTVF1 = new EventsTVF();
+                    eventsTVF1.EventName = _context.Events.Where(a => a.Id == event1.EventId).First().Name;
+                    var res = _context.Results.Where(a => a.EventId == event1.EventId && a.UserId == athlete.UserId).FirstOrDefault();
+                    if (res != null)
                     {
-                        EventsTVF eventsTVF1 = new EventsTVF();
-                        eventsTVF1.EventName=_context.Events.Where(a=>a.Id==event1.EventId).First().Name;
-                        events.Add(eventsTVF1);
+                        eventsTVF1.EventRes = res.Points;
+                        eventsTVF1.Result = res.Result1;
+                        tot_pts += res.Points;
                     }
-                    athl.Events = events;
-                    athlTVF.Add(athl);
+                    events.Add(eventsTVF1);
                 }
-                return Json(athlTVF.ToArray().ToDataTablesResponse(dataRequest));
-            }
-            else
-            {
-                var events_count = _context.CompetitionEvents.Where(a => a.CompetitionId == compId).Count();
-                
-                    List<AthlTVF> athlTVF = new List<AthlTVF>();
-                    int pos = 0, posres = 0;
-                    while (posres < res.Count)
-                    {
-                        if (posres % events_count == 0)
-                        {
-                            AthlTVF athl = new AthlTVF();
-                            athl.athlete_ID = res[posres].athlete_ID;
-                            athl.athlete_name = res[posres].athlete_name;
-                            List<EventsTVF> events = new List<EventsTVF>();
-                            EventsTVF eventsTVF1 = new EventsTVF();
-                            eventsTVF1.EventName = res[posres].event_name;
-                            eventsTVF1.EventRes = res[posres].event_points;
-                            eventsTVF1.Result = res[posres].event_result;
-                            events.Add(eventsTVF1);
-                            athl.total_pts = res[posres].total_pts;
-                            ++posres;
-                            while (posres % events_count != 0)
-                            {
-                                EventsTVF eventsTVF = new EventsTVF();
-                                eventsTVF.EventName = res[posres].event_name;
-                                eventsTVF.EventRes = res[posres].event_points;
-                                eventsTVF.Result = res[posres].event_result;
-                                events.Add(eventsTVF);
-                                
-                                ++posres;
+                athl.Events = events;
 
-                            }
-                            athl.Events = events;
-                            athlTVF.Add(athl);
-                        }
-                    }
-                    return Json(athlTVF.ToArray().ToDataTablesResponse(dataRequest));
-                
+                athl.total_pts = tot_pts;
+                athlTVF.Add(athl);
             }
-           /* return Json(res
-                .Select(e => new
-                {
-                    Id = e.ID,
-                    Events=
-                    Name = e.Name,
-                    Created = e.Created,
-                    Salary = e.Salary,
-                    Position = e.Position,
-                    Office = e.Office
-                })
-                .ToDataTablesResponse(dataRequest, recordsTotal, recordsFilterd));*/
-          
+            return Json(athlTVF.ToArray().ToDataTablesResponse(dataRequest));
+
+
+            /* var res = _context.ResultsTVF(compId).ToList();
+             if (res.Count == 0)
+             {
+                 var lineup =  await _context.Lineups.Where(a => a.CompetitionId == compId && a.IsConfirmed==1).ToListAsync();
+                 List<AthlTVF> athlTVF = new List<AthlTVF>();
+                 foreach (var athlete in lineup)
+                 {
+                     AthlTVF athl = new AthlTVF();
+                     athl.athlete_ID = athlete.UserId;
+                     athl.athlete_name = _context.Users.Where(a => a.Id == athlete.UserId).First().Name;
+                     List<EventsTVF> events = new List<EventsTVF>();
+                     var events2=_context.CompetitionEvents.Where(a=>a.CompetitionId==compId).ToList();
+                     foreach(var event1 in events2)
+                     {
+                         EventsTVF eventsTVF1 = new EventsTVF();
+                         eventsTVF1.EventName=_context.Events.Where(a=>a.Id==event1.EventId).First().Name;
+                         events.Add(eventsTVF1);
+                     }
+                     athl.Events = events;
+                     athlTVF.Add(athl);
+                 }
+                 return Json(athlTVF.ToArray().ToDataTablesResponse(dataRequest));
+             }
+             else
+             {
+                 var events_count = _context.CompetitionEvents.Where(a => a.CompetitionId == compId).Count();
+
+                     List<AthlTVF> athlTVF = new List<AthlTVF>();
+                     int pos = 0, posres = 0;
+                     while (posres < res.Count)
+                     {
+                         if (posres % events_count == 0)
+                         {
+                             AthlTVF athl = new AthlTVF();
+                             athl.athlete_ID = res[posres].athlete_ID;
+                             athl.athlete_name = res[posres].athlete_name;
+                             List<EventsTVF> events = new List<EventsTVF>();
+                             EventsTVF eventsTVF1 = new EventsTVF();
+                             eventsTVF1.EventName = res[posres].event_name;
+                             eventsTVF1.EventRes = res[posres].event_points;
+                             eventsTVF1.Result = res[posres].event_result;
+                             events.Add(eventsTVF1);
+                             athl.total_pts = res[posres].total_pts;
+                             ++posres;
+                             while (posres % events_count != 0 && posres<res.Count)
+                             {
+                                 EventsTVF eventsTVF = new EventsTVF();
+                                 eventsTVF.EventName = res[posres].event_name;
+                                 eventsTVF.EventRes = res[posres].event_points;
+                                 eventsTVF.Result = res[posres].event_result;
+                                 events.Add(eventsTVF);
+
+                                 ++posres;
+
+                             }
+                             athl.Events = events;
+                             athlTVF.Add(athl);
+                         }
+                     }
+                     return Json(athlTVF.ToArray().ToDataTablesResponse(dataRequest));*/
+
         }
+        /* return Json(res
+             .Select(e => new
+             {
+                 Id = e.ID,
+                 Events=
+                 Name = e.Name,
+                 Created = e.Created,
+                 Salary = e.Salary,
+                 Position = e.Position,
+                 Office = e.Office
+             })
+             .ToDataTablesResponse(dataRequest, recordsTotal, recordsFilterd));*/
+
+
         // GET: ResultsTVFs
         public async Task<IActionResult> Index(int compId)
         {
             var res = _context.ResultsTVF(compId).ToList();
             if (res.Count == 0)
             {
-                var athletes=_context.Lineups.Where(a=>a.CompetitionId == compId && a.IsConfirmed==1).ToList();
+                var athletes = _context.Lineups.Where(a => a.CompetitionId == compId && a.IsConfirmed == 1).ToList();
                 foreach (var athlete in athletes)
                 {
                     ResultsTVF athlTVF = new ResultsTVF();
                     athlTVF.athlete_ID = athlete.UserId;
-                    athlTVF.athlete_name=_context.Users.Where(a=>a.Id==athlete.UserId).FirstOrDefault().Name;
+                    athlTVF.athlete_name = _context.Users.Where(a => a.Id == athlete.UserId).FirstOrDefault().Name;
                     res.Add(athlTVF);
                 }
             }
@@ -131,7 +163,7 @@ namespace StrongmanApp.Controllers
         }
 
         // GET: ResultsTVFs/Details/5
-        public async Task<IActionResult> Details(int? id)
+        /*public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -257,6 +289,7 @@ namespace StrongmanApp.Controllers
         private bool ResultsTVFExists(int id)
         {
             return _context.ResultsTVF_1.Any(e => e.ID == id);
-        }
+        }*/
     }
 }
+

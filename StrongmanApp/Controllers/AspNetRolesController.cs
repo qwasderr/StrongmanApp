@@ -9,7 +9,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StrongmanApp.Models;
 using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNet.Identity;
+
+//using StrongmanApp.Context;
 
 namespace StrongmanApp.Controllers
 {
@@ -17,8 +18,8 @@ namespace StrongmanApp.Controllers
     public class AspNetRolesController : Controller
     {
         private readonly SportDbContext _context;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        public AspNetRolesController(SportDbContext context, RoleManager<IdentityRole> roleManager)
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        public AspNetRolesController(SportDbContext context, RoleManager<IdentityRole<int>> roleManager)
         {
             _context = context;
             _roleManager = roleManager;
@@ -67,7 +68,11 @@ namespace StrongmanApp.Controllers
                 ModelState.AddModelError("Name", "This name already exists");
                 return View(aspNetRole);
             }
-            await _roleManager.CreateAsync(new IdentityRole(aspNetRole.Name));
+            var role = new IdentityRole<int>();
+            role.Name = aspNetRole.Name;
+            //await roleManager.CreateAsync(new IdentityRole("admin"));
+            await _roleManager.CreateAsync(role);
+            //await _roleManager.CreateAsync(new IdentityRole(aspNetRole.Name));
             /*ModelState.Remove("Id");
             if (ModelState.IsValid)
             {

@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+//using StrongmanApp.Context;
 using StrongmanApp.Models;
 
 namespace StrongmanApp.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class UsersController : Controller
     {
         private readonly SportDbContext _context;
@@ -22,7 +25,20 @@ namespace StrongmanApp.Controllers
         public async Task<IActionResult> Index()
         {
             var sportDbContext = _context.Users.Include(u => u.Country);
-            return View(await sportDbContext.ToListAsync());
+            DateTime zeroTime = new DateTime(1, 1, 1);
+            foreach (var user in sportDbContext)
+            {
+                if (user.BirthDate != null)
+                {
+                    TimeSpan? span = DateTime.Now - user.BirthDate;
+
+                    int years = (zeroTime + span).Value.Year - 1;
+                    user.Age = years;
+                    _context.Update(user);
+                }
+            }
+            _context.SaveChanges();
+            return View(await _context.Users.Include(u => u.Country).ToListAsync());
         }
 
         // GET: Users/Details/5
@@ -47,7 +63,7 @@ namespace StrongmanApp.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id");
+            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Name");
             return View();
         }
 
@@ -56,15 +72,58 @@ namespace StrongmanApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,BirthDate,Email2,IsContestant,Age,Weight,Height,FirstCompYear,LastCompYear,CountryId,PhotoUrl,IsAdmin,Sex,SportCategory,LastUpdate,IsDeleted,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
+        public async Task<IActionResult> Create([Bind("Name,BirthDate,Email2,IsContestant,Age,Weight,Height,FirstCompYear,LastCompYear,CountryId,PhotoUrl,IsAdmin,Sex,SportCategory,LastUpdate,IsDeleted,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user, string? password)
         {
+            user.Country=_context.Countries.Where(a=>a.Id==user.CountryId).First();
+            ModelState.Remove("Country");
+            user.LastUpdate = DateOnly.FromDateTime(DateTime.Now);
+            ModelState.Remove("LastUpdate");
+            user.EmailConfirmed = false;
+            ModelState.Remove("EmailConfirmed");
+            user.LockoutEnabled = true;
+            ModelState.Remove("LockoutEnabled");
+            user.TwoFactorEnabled= false;
+            ModelState.Remove("TwoFactorEnabled");
+            user.AccessFailedCount= 0;
+            ModelState.Remove("AccessFailedCount");
+            user.PhoneNumberConfirmed= false;
+            ModelState.Remove("PhoneNumberConfirmed");
+            DateTime zeroTime = new DateTime(1, 1, 1);
+            if (user.BirthDate != null)
+            {
+                TimeSpan? span = DateTime.Now - user.BirthDate;
+
+                int years = (zeroTime + span).Value.Year - 1;
+                user.Age = years;
+            }
+            ModelState.Remove("Age");
+            if (user.BirthDate > DateTime.Now)
+            {
+                ModelState.AddModelError("BirthDate", "Enter a right Birth Date");
+            }
+            if (_context.Users.Where(a => a.Name == user.Name).Count() != 0)
+            {
+                ModelState.AddModelError("Name", "This name already exists");
+            }
+            if (user.Age <= 0)
+            {
+                ModelState.AddModelError("Age", "Enter a correct age");
+            }
+            if (user.Weight <= 0)
+            {
+                ModelState.AddModelError("Weight", "Enter a correct weight");
+            }
+            if (user.Height <= 0)
+            {
+                ModelState.AddModelError("Weight", "Enter a correct height");
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryId);
+            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Name", user.CountryId);
             return View(user);
         }
 
@@ -81,7 +140,8 @@ namespace StrongmanApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryId);
+            ViewData["UserName"]=_context.Users.Where(a=> a.Id == id).FirstOrDefault().Name;
+            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Name", user.CountryId);
             return View(user);
         }
 
@@ -90,13 +150,35 @@ namespace StrongmanApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,BirthDate,Email2,IsContestant,Age,Weight,Height,FirstCompYear,LastCompYear,CountryId,PhotoUrl,IsAdmin,Sex,SportCategory,LastUpdate,IsDeleted,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Name,BirthDate,Email2,IsContestant,Age,Weight,Height,FirstCompYear,LastCompYear,CountryId,PhotoUrl,IsAdmin,Sex,SportCategory,LastUpdate,IsDeleted,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user, string name)
         {
             if (id != user.Id)
             {
                 return NotFound();
             }
-
+            user.Country = _context.Countries.Where(a => a.Id == user.CountryId).FirstOrDefault();
+            ModelState.Remove("Country");
+            ModelState.Remove("Age");
+            if (user.BirthDate > DateTime.Now)
+            {
+                ModelState.AddModelError("BirthDate", "Enter a right Birth Date");
+            }
+            if (_context.Users.Where(a => a.Name == user.Name).Count() != 0 && (name!=user.Name))
+            {
+                ModelState.AddModelError("Name", "This name already exists");
+            }
+            if (user.Age <= 0)
+            {
+                ModelState.AddModelError("Age", "Enter a correct age");
+            }
+            if (user.Weight <= 0)
+            {
+                ModelState.AddModelError("Weight", "Enter a correct weight");
+            }
+            if (user.Height <= 0)
+            {
+                ModelState.AddModelError("Weight", "Enter a correct height");
+            }
             if (ModelState.IsValid)
             {
                 try
@@ -117,7 +199,7 @@ namespace StrongmanApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryId);
+            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Name", user.CountryId);
             return View(user);
         }
 

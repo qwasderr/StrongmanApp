@@ -1,14 +1,17 @@
 ﻿@model IEnumerable<StrongmanApp.Models.Competition>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Competitions";
 }
 
-<h1>Index</h1>
-
-<p>
+<h1 style="text-align:center">Competitions</h1>
+@if (User.IsInRole("admin"))
+{
+   <p>
     <a asp-action="Create">Create New</a>
-</p>
+</p> 
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -57,15 +60,38 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Town.Name)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VideoUrl)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
-                <a asp-controller="ResultsTVFs" asp-action="Index" asp-route-compId="@item.Id">Results</a>
-            </td>
+                @if (item.VideoUrl != null)
+                {
+                    <td>
+
+                        <iframe allow="fullscreen;" src=" @Html.DisplayFor(modelItem => item.VideoUrl)">
+                        </iframe>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.VideoUrl)
+                    </td>
+                }
+                <td>
+                @if (User.IsInRole("admin"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                        <a asp-controller="ResultsTVFs" asp-action="Index" asp-route-compId="@item.Id">Results</a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-controller="ResultsTVFs" asp-action="Index" asp-route-compId="@item.Id">Results</a>
+                    </td>
+                }
+            
         </tr>
 }
     </tbody>

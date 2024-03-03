@@ -16,10 +16,10 @@ public partial class User: IdentityUser<int>
     [Display(Name = "Birth date")]
     [DataType(DataType.Date)]
     [Column(TypeName = "Date")]
-    public DateOnly? BirthDate { get; set; }
+    public DateTime? BirthDate { get; set; }
 
     public string? Email2 { get; set; }
-    [Display(Name = "Are you planning to participate in the competition?")]
+    [Display(Name = "Athlete?")]
     public bool? IsContestant { get; set; }
     [Display(Name = "Age")]
     public int? Age { get; set; }
@@ -27,13 +27,13 @@ public partial class User: IdentityUser<int>
     public int? Weight { get; set; }
     [Display(Name = "Height")]
     public int? Height { get; set; }
-
+    [Display(Name = "First Competition Year")]
     public int? FirstCompYear { get; set; }
-
+    [Display(Name = "Last Competition Year")]
     public int? LastCompYear { get; set; }
     [Display(Name = "Country")]
     public int? CountryId { get; set; }
-    [Display(Name = "Photo Url")]
+    [Display(Name = "Photo")]
     public string? PhotoUrl { get; set; }
 
     public string? IsAdmin { get; set; } = null!;
@@ -45,8 +45,10 @@ public partial class User: IdentityUser<int>
     public DateOnly LastUpdate { get; set; }
 
     public bool? IsDeleted { get; set; }
+    [Display(Name = "Country Name")]
     [ForeignKey("CountryId")]
     public virtual Country Country { get; set; } = null!;
 
     public virtual ICollection<Lineup> Lineups { get; set; } = new List<Lineup>();
+    
 }

@@ -1,10 +1,10 @@
-﻿@model IEnumerable<StrongmanApp.Models.AspNetRole>
+﻿@model IEnumerable<StrongmanApp.Models.Role>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Roles";
 }
 
-<h1>Index</h1>
+<h1 style="text-align:center">Roles</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -24,6 +24,7 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>

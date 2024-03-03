@@ -39,53 +39,15 @@ public partial class AspNetUser
 
     public int AccessFailedCount { get; set; }
 
-    public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; } = new List<AspNetUserClaim>();
+    public virtual ICollection<UserClaim> AspNetUserClaims { get; set; } = new List<UserClaim>();
 
-    public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; } = new List<AspNetUserLogin>();
+    public virtual ICollection<UserLogin> AspNetUserLogins { get; set; } = new List<UserLogin>();
 
-    public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; } = new List<AspNetUserToken>();
+    public virtual ICollection<UserToken> AspNetUserTokens { get; set; } = new List<UserToken>();
 
-    public virtual ICollection<AspNetRole> Roles { get; set; } = new List<AspNetRole>();
+    public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
 
 
 
-    [Display(Name = "Name")]
-    [Required(ErrorMessage = "The field can't be empty")]
-    public string Name { get; set; } = null!;
-    [Display(Name = "Birth date")]
-    [DataType(DataType.Date)]
-    [Column(TypeName = "Date")]
-    public DateOnly? BirthDate { get; set; }
-
-    public string? Email2 { get; set; }
-    [Display(Name = "Are you planning to participate in the competition?")]
-    public bool? IsContestant { get; set; }
-    [Display(Name = "Age")]
-    public int? Age { get; set; }
-    [Display(Name = "Weight")]
-    public int? Weight { get; set; }
-    [Display(Name = "Height")]
-    public int? Height { get; set; }
-
-    public int? FirstCompYear { get; set; }
-
-    public int? LastCompYear { get; set; }
-    [Display(Name = "Country")]
-    public int? CountryId { get; set; }
-    [Display(Name = "Photo Url")]
-    public string? PhotoUrl { get; set; }
-
-    public string? IsAdmin { get; set; } = null!;
-    [Display(Name = "Gender")]
-    public string? Sex { get; set; } = null!;
-
-    public string? SportCategory { get; set; }
-
-    public DateOnly LastUpdate { get; set; }
-
-    public bool? IsDeleted { get; set; }
-    [ForeignKey("CountryId")]
-    public virtual Country Country { get; set; } = null!;
-
-    public virtual ICollection<Lineup> Lineups { get; set; } = new List<Lineup>();
+    
 }

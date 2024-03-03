@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1.0" />
     <title>@ViewData["Title"] - StrongmanApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min2.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -10,9 +10,19 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.4.2/b-html5-1.4.2/b-print-1.4.2/sl-1.2.3/datatables.min.css" />
     
 </head>
+<style>
+    .gradient-custom {
+        background: rgb(242,239,17);
+        background: linear-gradient(0deg, rgba(242,239,17,1) 0%, rgba(45,253,251,1) 100%);
+    }
+
+    html, body {
+        max-width: 100%;
+    }
+</style>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3" data-bs-theme="dark" style="background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(250,57,0,1) 50%, rgba(0,84,183,1) 100%);">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">StrongmanApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -21,43 +31,64 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        
+                        @if (User.IsInRole("admin"))
+                        {
+                            
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Athletes" asp-action="Index">Athletes</a>
+                            </li>
+                        }
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="UsersNR" asp-action="Index">Users</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Competitions" asp-action="Index">Competitions</a>
+                        </li>
+                        
+                        @if (User.Identity.IsAuthenticated &&!User.IsInRole("admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="CompetitionsReg" asp-action="Index">Registration for the competition</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Federations" asp-action="Index">Federations</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Competitions" asp-action="Index">Competitions</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="CompetitionEvents" asp-action="Index">CompetitionEvents</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="CompetitionsReg" asp-action="Index">CompetitionReg</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Lineups" asp-action="Index">Lineups</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="LineupsConfirm" asp-action="Index">Confirm Lineups</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Results" asp-action="Index">Results</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="ResultsTVFs" asp-action="Index">ResultsTVF</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="News" asp-action="Index">News</a>
                         </li>
                          @if (User.IsInRole("admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AspNetRoles" asp-action="Index">Roles</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Countries" asp-action="Index">Countries</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AspNetUserRoles" asp-action="Index">UserRoles</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Towns" asp-action="Index">Towns</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Lineups" asp-action="Index">Lineups</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="LineupsConfirm" asp-action="Index">Confirm Lineups</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="CompetitionEvents" asp-action="Index">CompetitionEvents</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Results" asp-action="Index">Results</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="AspNetUserRoles" asp-action="Index">UserRoles</a>
                             </li>
                         }
                     </ul>
@@ -72,7 +103,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-white">
         <div class="container">
             &copy; 2024 - StrongmanApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

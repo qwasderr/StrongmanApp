@@ -3,12 +3,12 @@
 @using System.Security.Principal
 @using System.Security.Claims;
 @using StrongmanApp.Controllers;
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 @{
     ViewData["Title"] = "Details";
 
-    var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var userId = Int32.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
     var compId = Model.Id;        
 }
 
